@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hedge Funds on a Swamp — Blockchain Bridge Analysis</title>
+
+  <!-- Minimal, readable styling -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+
+  <!-- Social / SEO -->
+  <meta name="description" content="Comprehensive sygstematization of blockchain bridge security: formal model, static analysis across major bridges, transaction forensics of 43 exploits, and a layered threat model with defense recommendations." />
+  <meta property="og:title" content="Hedge Funds on a Swamp — Blockchain Bridge Analysis" />
+  <meta property="og:description" content="Formal model + static & transaction analyses for blockchain bridge security, with attack taxonomy and design guidance." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://fdatalab.github.io/BlockchainBridgeAnalysis/" />
+
+  <style>
+    :root { --maxw: 980px; }
+    body { max-width: var(--maxw); margin: 0 auto; }
+    header h1 {
+	  margin-bottom: .25rem;
+	  text-align: center;
+	}
+
+	header p.tagline {
+	  margin-top: 0;
+	  margin-bottom: 2rem; 
+	  color: #666;
+	  text-align: center;
+	}
+
+
+    header h1 { margin-bottom: .25rem; }
+    header p.tagline { margin-top: 0; color: #666; }
+    nav a { margin: 0 .6rem; font-weight: 700; white-space: nowrap; }
+    .meta { font-size: .95rem; color: #555; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+    .card { padding: 1rem; border: 1px solid #e3e3e3; border-radius: 10px; }
+
+    /* Default code block style (kept for other sections) */
+    pre { background: #1f1f1f; color: #eee; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    code { white-space: pre; }
+
+    /* Slimmer, lighter box ONLY for the Cite section */
+    #cite pre {
+      background: #f7f7f7;
+      color: #222;
+      padding: .5rem .75rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    #cite code { font-size: .95em; }
+
+    footer { text-align: center; margin: 3rem 0 2rem; color: #666; }
+    .pill { display: inline-block; padding: .2rem .6rem; border-radius: 999px; background: #efefef; font-size: .85rem; margin-right: .4rem; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; background: #efefef; padding: 0 .3rem; border-radius: 4px; }
+
+    /* Justification rules */
+    p, li { text-align: justify; }
+    .card p, .card li { text-align: left; } 
+
+    /* Appendix F layout */
+    #appendix-f .case {
+      border: 1px solid #e3e3e3;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+      background: #fff;
+    }
+    #appendix-f h3 { margin-top: .2rem; }
+    #appendix-f .frame {
+      border: 1px solid #e9e9e9;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: .6rem 0 .5rem 0;
+      background: #fafafa;
+    }
+    #appendix-f .frame embed {
+      width: 100%;
+      height: 480px;
+      display: block;
+      border: 0;
+    }
+    #appendix-f .caption {
+      font-size: .95rem;
+      color: #555;
+      margin: .25rem 0 .4rem 0;
+      text-align: left;
+    }
+    #appendix-f details {
+      margin-top: .25rem;
+    }
+    #appendix-f details summary {
+      cursor: pointer;
+      font-weight: 600;
+    }
+	
+	/* Appendix figures */
+	#appendix-f figure {
+	  margin: 2rem auto;
+	  text-align: center;
+	  padding: 1rem;
+	  border: 1px solid #ddd;
+	  border-radius: 10px;
+	  background: #fafafa;
+	  max-width: 700px;
+	}
+
+	#appendix-f figure img {
+	  width: 95%;
+	  height: auto;
+	  display: block;
+	  margin: 0.5rem auto;
+	}
+
+	#appendix-f figcaption.caption {
+	  font-size: 0.9rem;
+	  color: #444;
+	  margin-top: 0.5rem;
+	  text-align: center;
+	}
+	
+	nav {
+	  text-align: center;
+	  margin-top: 0.5rem;
+	  margin-bottom: 1rem;
+	}
+
+	nav a {
+	  margin: 0 .6rem;
+	  font-weight: 700;
+	  white-space: nowrap;
+	}
+
+
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Hedge Funds on a Swamp: Analyzing Patterns, Vulnerabilities, and Defense Measures in Blockchain Bridges</h1>
+  <p class="tagline">Experiment · Analysis · Benchmark</p>
+
+  <nav aria-label="Primary">
+    <a href="#abstract">Abstract</a>
+    <a href="#highlights">Highlights</a>
+    <a href="#contributions">Contributions</a>
+    <a href="#results">Findings</a>
+    <a href="#resources">Paper & Code</a>
+    <a href="#appendix-f">Attacks on Bridges</a>
+    <a href="#cite">Cite</a>
+  </nav>
+
+  <p class="meta" style="margin-top:1rem">
+    <strong>Authors:</strong> Poupak Azad (University of Manitoba), Jiahua Xu (UCL),
+    Yebo Feng (Nanyang Technological University), Preston Strowbridge (UCF),
+    Cüneyt Gürcan Akçora (UCF)
+  </p>
+</header>
+
+<section id="abstract">
+  <h2>Abstract</h2>
+  <p>
+    Blockchain bridges have become essential infrastructure for enabling interoperability across different blockchain networks,
+    with more than $24B monthly bridge transaction volume. However, their growing adoption has been accompanied by a
+    disproportionate rise in security breaches, making them the single largest source of financial loss in Web3. For cross-chain
+    ecosystems to be robust and sustainable, it is essential to understand and address these vulnerabilities. In this study,
+    we present a comprehensive systematization of blockchain bridge design and security. We define three bridge security priors,
+    formalize the architectural structure of 13 prominent bridges, and identify 23 attack vectors grounded in real-world blockchain
+    exploits. Using this foundation, we evaluate 43 representative attack scenarios and introduce a layered threat model that
+    captures security failures across source chain, off-chain, and destination chain components.
+  </p>
+  <p>
+    Our analysis at the static code and transaction network levels reveals recurring design flaws, particularly in access control,
+    validator trust assumptions, and verification logic, and identifies key patterns in adversarial behavior based on
+    transaction-level traces. To support future development, we propose a decision framework for bridge architecture design,
+    along with defense mechanisms such as layered validation and circuit breakers. This work provides a data-driven foundation
+    for evaluating bridge security and lays the groundwork for standardizing resilient cross-chain infrastructure.
+  </p>
+</section>
+
+<section id="highlights">
+  <h2>Highlights (TL;DR)</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Scope</h3>
+      <p>
+        • Formal model of bridges (source/off-chain/destination)<br/>
+        • <strong>23 attack vectors</strong> grouped by layer<br/>
+        • <strong>43 exploits</strong> analyzed with on-chain traces
+      </p>
+    </div>
+    <div class="card">
+      <h3>Key Risks Observed</h3>
+      <p>
+        • Access control gaps &amp; unsafe external calls<br/>
+        • Minimal/centralized validator sets (key compromise)<br/>
+        • Verification logic bugs (proof/signature checks)
+      </p>
+    </div>
+    <div class="card">
+      <h3>Design Guidance</h3>
+      <p>
+        • Trust-minimized verification where possible<br/>
+        • Independent checks for proofs/signatures<br/>
+        • Operational safeguards: circuit breakers, limits
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="contributions">
+  <h2>Contributions</h2>
+  <ul>
+    <li>We formalize a layered model of blockchain bridge architectures and define core security priors relevant to cross-chain behavior.</li>
+    <li>We develop a vulnerability taxonomy and introduce a formal notion of bridge attack surfaces based on trust assumptions and implementation details.</li>
+    <li>We perform the first large-scale static analysis of deployed bridge contracts, quantifying security patterns across access controls, call structures, and guard mechanisms.</li>
+    <li>We extract and analyze transaction-level behavior from bridge exploit incidents, identifying behavioral patterns across phases of use, compromise, and fund laundering.</li>
+    <li>We provide security benchmarks and design recommendations to guide future bridge development, formal analysis, and regulatory evaluation.</li>
+  </ul>
+</section>
+
+<section id="results">
+  <h2>Selected Findings</h2>
+  <p>
+    Blockchain bridges have become indispensable infrastructure for cross-chain interoperability, yet they remain among the most vulnerable components of the decentralized ecosystem. Our study presents the first comprehensive, data-driven systematization of bridge security, combining formal modeling, large-scale static analysis, and empirical transaction-level investigations. We show that the majority of bridge attacks violate core security priors, particularly causality and consistency, without breaching the value peg itself. 
+  </p>
+  <p>
+    Our analysis reveals that most successful exploits stem from two dominant classes: off-chain trust failures and on-chain validation bugs. These vectors frequently exhibit high damage-to-effort ratios, which we formalize through the <code>der(V)</code> metric. We also find that architectural design plays a decisive role in resilience. Trustless models, such as light-client and rollup-native bridges, have so far withstood real-world adversarial conditions, while trusted and loosely trust-minimized bridges remain disproportionately vulnerable. Emerging defense mechanisms like circuit breakers, buffer delays, and hybrid validation schemes offer promise but are inconsistently implemented and lack formal standardization.
+  </p>
+  <p>
+    Finally, we identify critical gaps in real-time detection and mitigation. Despite billions in locked value, most bridges lack robust monitoring infrastructure or containment protocols, and responses to attacks are often delayed and improvised. Bridging this gap will require new research into on-chain anomaly detection, decentralized fail-safe mechanisms, and benchmarking frameworks that account for detection latency and systemic risk.
+  </p>
+</section>
+
+
+
+
+<section id="resources">
+  <h2>Paper &amp; Project Resources</h2>
+  <ul>
+    <li><a href="https://arxiv.org/abs/2507.06156">Paper (PDF) - arXiv</a></li>
+    <li><a href="https://github.com/FDataLab/BlockchainBridgeAnalysis">GitHub Repository</a></li>
+  </ul>
+</section>
+
+<!-- ===================== Appendix ===================== -->
+<section id="appendix-f">
+  <h2>Descriptions of Hacks and Attacks on Bridges</h2>
+  <p>
+	This section compiles detailed visual summaries of major cross-chain bridge exploits. 
+	Each case study illustrates the mechanics of the attack, the sequence of fund movements, 
+	and the vulnerabilities that were exploited. The figures are paired with concise explanations 
+	that trace weaknesses in validator configurations, message verification, contract logic, 
+	and operational key management. Together, these examples highlight recurring failure modes 
+	and extract practical security lessons for the design of resilient bridge protocols.
+	</p>
+
+
+  <!-- Ronin -->
+  <article class="case">
+    <h3>Ronin Bridge — Validator Key Compromise</h3>
+    <figure>
+      <img src="figures/ronin.png" alt="Ronin Bridge attack flow and funds movement" style="max-width:100%; border-radius:8px; border:1px solid #e3e3e3;">
+      <figcaption class="caption">Validator quorum compromised; forged messages authorized large releases and rapid laundering.</figcaption>
+    </figure>
+    <p>
+      Attackers controlled a supermajority of validators and approved fraudulent messages that destination contracts trusted.
+      Concentrated signer sets and weak key operations turned a single compromise into catastrophic drain.
+    </p>
+    <details><summary>Key points</summary>
+      <ul>
+        <li><strong>Root cause:</strong> Majority validator key compromise.</li>
+        <li><strong>Failure mode:</strong> Off-chain quorum accepted forged messages.</li>
+        <li><strong>Mitigations:</strong> Larger/diverse validator sets, Hardware Security Modules, rotation, rate limits, circuit breakers.</li>
+      </ul>
+    </details>
+  </article>
+
+  <!-- Wormhole -->
+  <article class="case">
+    <h3>Wormhole — Verification/Signature Bypass</h3>
+    <figure>
+      <img src="figures/WarmholeBridgeHack.png" alt="Wormhole signature verification bypass path" style="max-width:100%; border-radius:8px; border:1px solid #e3e3e3;">
+      <figcaption class="caption">Attestation verification weakness permitted unbacked minting on destination chain.</figcaption>
+    </figure>
+    <p>
+      A validation flaw allowed crafted messages to pass guardian signature checks, enabling mints without causal source-chain locks.
+      Small verification bugs in cross-chain proofs can have outsized impact.
+    </p>
+    <details><summary>Key points</summary>
+      <ul>
+        <li><strong>Root cause:</strong> Incomplete/incorrect attestation verification.</li>
+        <li><strong>Signals:</strong> Mint events without matching source-chain events.</li>
+        <li><strong>Mitigations:</strong> Strict domain separation, replay protection, independent verification modules.</li>
+      </ul>
+    </details>
+  </article>
+
+  <!-- Nomad -->
+  <article class="case">
+    <h3>Nomad Bridge — Initialization/Config Bug</h3>
+    <figure>
+      <img src="figures/NomadBridgeHack.png" alt="Nomad initialization/configuration bug path" style="max-width:100%; border-radius:8px; border:1px solid #e3e3e3;">
+      <figcaption class="caption">Misconfigured state caused universal message acceptance; copy-paste draining ensued.</figcaption>
+    </figure>
+    <p>
+      A deployment error made messages appear valid by default. Once public, many addresses replicated the same draining
+      transaction template, turning the exploit into a mass event.
+    </p>
+    <details><summary>Key points</summary>
+      <ul>
+        <li><strong>Root cause:</strong> Misinitialized contract state.</li>
+        <li><strong>Failure mode:</strong> Destination chain accepted spoofed messages.</li>
+        <li><strong>Mitigations:</strong> Deployment checklists, invariant tests, pausability, post-deploy audits.</li>
+      </ul>
+    </details>
+  </article>
+
+  <!-- Poly Network -->
+  <article class="case">
+    <h3>Poly Network — Privileged Path / Multisig Risks</h3>
+    <figure>
+      <img src="figures/PolyBridgeHack.png" alt="Poly Network privileged call path and multisig risk" style="max-width:100%; border-radius:8px; border:1px solid #e3e3e3;">
+      <figcaption class="caption">Replaced public key / privileged path enabled forged transfers across chains (~$611M).</figcaption>
+    </figure>
+    <p>
+      Complex privilege and upgrade paths were exploitable. Weak signer assurance and role design enabled actions intended
+      only for governance/maintenance to move funds across chains.
+    </p>
+    <details><summary>Key points</summary>
+      <ul>
+        <li><strong>Root cause:</strong> Over-privileged roles and upgrade hooks.</li>
+        <li><strong>Signals:</strong> Admin-like calls preceding large releases.</li>
+        <li><strong>Mitigations:</strong> Least privilege, timelocks, multi-step governance, audited upgrade playbooks.</li>
+      </ul>
+    </details>
+  </article>
+
+  <!-- Binance Bridge -->
+  <article class="case">
+    <h3>Binance Bridge — Proof/Verification Weakness</h3>
+    <figure>
+      <img src="figures/BinanceBridgeHack.png" alt="Binance Bridge verification weakness" style="max-width:100%; border-radius:8px; border:1px solid #e3e3e3;">
+      <figcaption class="caption">Manipulated proof path triggered unauthorized minting on the destination side.</figcaption>
+    </figure>
+    <p>
+      Crafted messages passed verification and minted assets without corresponding source-chain events, underscoring the need
+      for robust proof formats and replay-safe verification.
+    </p>
+    <details><summary>Key points</summary>
+      <ul>
+        <li><strong>Root cause:</strong> Validation gap in proof handling.</li>
+        <li><strong>Mitigations:</strong> Canonical hashing, strict signature domains, on-chain light verification where feasible.</li>
+      </ul>
+    </details>
+  </article>
+
+  <!-- Horizon (Harmony) -->
+  <article class="case">
+    <h3>Horizon Bridge (Harmony) — Multisig Compromise</h3>
+    <figure>
+      <img src="figures/HorizonBridgeHack.png" alt="Horizon bridge multisig compromise" style="max-width:100%; border-radius:8px; border:1px solid #e3e3e3;">
+      <figcaption class="caption">Low-threshold multisig allowed compromised keys to authorize large releases.</figcaption>
+    </figure>
+    <p>
+      Minimal signer sets made compromise sufficient to approve fraudulent messages. Concentrated trust magnified
+      the impact of an operational failure.
+    </p>
+    <details><summary>Key points</summary>
+      <ul>
+        <li><strong>Root cause:</strong> Low-threshold multisig with compromised keys.</li>
+        <li><strong>Mitigations:</strong> Larger/heterogeneous signer sets, HSMs, monitoring, rate limits.</li>
+      </ul>
+    </details>
+  </article>
+
+  <!-- Multichain -->
+  <article class="case">
+    <h3>Multichain Bridge — Key/Access Management Weaknesses</h3>
+    <figure>
+      <img src="figures/MultichainBridgeHack.png" alt="Multichain key/access management weaknesses" style="max-width:100%; border-radius:8px; border:1px solid #e3e3e3;">
+      <figcaption class="caption">Operational custody and signer management exposed assets to unauthorized control.</figcaption>
+    </figure>
+    <p>
+      Centralized control points and weak key practices enabled unauthorized message approval and fund movement.
+    </p>
+    <details><summary>Key points</summary>
+      <ul>
+        <li><strong>Root cause:</strong> Poor key/access management.</li>
+        <li><strong>Mitigations:</strong> MPC/HSM-backed signing, auditable rotations, least privilege.</li>
+      </ul>
+    </details>
+  </article>
+
+  <!-- Qubit -->
+  <article class="case">
+    <h3>Qubit Bridge — Logic/Accounting Flaw</h3>
+    <figure>
+      <img src="figures/QubitBridgeHack.png" alt="Qubit logic/accounting flaw" style="max-width:100%; border-radius:8px; border:1px solid #e3e3e3;">
+      <figcaption class="caption">Contract logic enabled mints without real collateral events.</figcaption>
+    </figure>
+    <p>
+      Incorrect state transitions and missing invariants let attackers mint based on non-existent or spoofed deposits.
+    </p>
+    <details><summary>Key points</summary>
+      <ul>
+        <li><strong>Root cause:</strong> Accounting/logic bug.</li>
+        <li><strong>Mitigations:</strong> Property-based testing, invariant checks, strict deposit→mint causality.</li>
+      </ul>
+    </details>
+  </article>
+
+  <!-- OmniBridge -->
+  <article class="case">
+    <h3>OmniBridge — Re-entrancy/Callback Surface</h3>
+    <figure>
+      <img src="figures/omnibridge.png" alt="Omnibridge re-entrancy/callback surface" style="max-width:100%; border-radius:8px; border:1px solid #e3e3e3;">
+      <figcaption class="caption">Token handling across callbacks created exploitable re-entrancy-like conditions.</figcaption>
+    </figure>
+    <p>
+      External call ordering and token interface assumptions allowed repeated release or mis-accounted transfers under specific sequences.
+    </p>
+    <details><summary>Key points</summary>
+      <ul>
+        <li><strong>Root cause:</strong> Unsafe external calls/callback ordering.</li>
+        <li><strong>Mitigations:</strong> Re-entrancy guards, checks-effects-interactions, stricter token assumptions.</li>
+      </ul>
+    </details>
+  </article>
+
+  <!-- Thorchain -->
+  <article class="case">
+    <h3>Thorchain — Routing/Swap Logic Issues</h3>
+    <figure>
+      <img src="figures/thorchain.png" alt="Thorchain routing/swap logic issues" style="max-width:100%; border-radius:8px; border:1px solid #e3e3e3;">
+      <figcaption class="caption">Complex cross-chain swaps/routing exposed logic enabling drain in edge cases.</figcaption>
+    </figure>
+    <p>
+      Crafted transactions exploited routing/swap logic to extract value beyond intended accounting, highlighting risks in
+      integrating AMM-style flows with cross-chain accounting.
+    </p>
+    <details><summary>Key points</summary>
+      <ul>
+        <li><strong>Root cause:</strong> Swap/routing logic errors and weak external input validation.</li>
+        <li><strong>Mitigations:</strong> Defense-in-depth checks, sandboxed routing, anomaly detection on pool movements.</li>
+      </ul>
+    </details>
+  </article>
+</section>
+
+
+<section id="cite">
+  <h2>Cite</h2>
+  <pre><code>@article{Azad2025Bridges,
+  title   = {Hedge Funds on a Swamp: Analyzing Patterns, Vulnerabilities, and Defense Measures in Blockchain Bridges},
+  author  = {Poupak Azad and Jiahua Xu and Yebo Feng and Preston Strowbridge and C{\"u}neyt G{\"u}rcan Ak{\c{c}}ora},
+  year    = {2025},
+  note    = {Manuscript},
+  url     = {https://github.com/FDataLab/BlockchainBridgeAnalysis}
+}</code></pre>
+</section>
+
+<footer>
+  <p>
+    <a href="https://arxiv.org/abs/2507.06156">Read the paper</a> · 
+    <a href="https://github.com/FDataLab/BlockchainBridgeAnalysis">GitHub Repo</a>
+  </p>
+</footer>
+
+
+</body>
+</html>
