@@ -3,9 +3,6 @@
 
 This repository contains all code, data, and artifacts supporting our paper. Please see the introduction page at https://fdatalab.github.io/BlockchainBridgeAnalysis/.
 
-
-**Authors:** Poupak Azad (University of Manitoba), Jiahua Xu (University College London), Feng Yebo (Nanyang Technological University), Cüneyt Gürcan Akçora (University of Central Florida)
-
 ---
 
 ## Overview
