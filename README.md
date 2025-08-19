@@ -1,7 +1,7 @@
 
 # Hedge Funds on a Swamp: Analyzing Patterns, Vulnerabilities, and Defense Measures in Blockchain Bridges
 
-This repository contains all code, data, and artifacts supporting our paper — including the [Main article + Appendix PDF](./BridgeArticle.pdf).
+This repository contains all code, data, and artifacts supporting our paper. Please see the introduction page at https://fdatalab.github.io/BlockchainBridgeAnalysis/.
 
 
 **Authors:** Poupak Azad (University of Manitoba), Jiahua Xu (University College London), Feng Yebo (Nanyang Technological University), Cüneyt Gürcan Akçora (University of Central Florida)
